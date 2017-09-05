@@ -13,6 +13,8 @@ public:
     Siniflar();
     void noktaEkle(double x, double y, double z);
     void sinifAitNoktalariGoster();
+    void beklenenDegerSet(int x);
+    Noktalar sinifaAitNoktaGet(int index);
 
 };
 
