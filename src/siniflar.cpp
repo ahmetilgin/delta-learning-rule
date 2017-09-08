@@ -8,6 +8,7 @@ void Siniflar::noktaEkle(double x, double y, double z){
     Noktalar noktam;
     noktam.setDegerler(x,y,z);
     this->sinifaAitNoktalar.push_back(noktam);
+    this->ornekSayisi++;
 }
 
 
@@ -24,4 +25,12 @@ void Siniflar::beklenenDegerSet(int x){
 Noktalar Siniflar::sinifaAitNoktaGet(int index){
     Noktalar noktam = sinifaAitNoktalar[index];
     return noktam;
+}
+
+double Siniflar::beklenenDegerGet(){
+    return this->beklenenDeger;
+}
+
+int Siniflar::getOrnekSayisi(){
+    return this->ornekSayisi;
 }

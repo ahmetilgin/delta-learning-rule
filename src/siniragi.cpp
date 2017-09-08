@@ -10,6 +10,32 @@ SinirAgi::SinirAgi()
     Sinif[1].noktaEkle(1,0,-1);
 }
 
+
+
+
+
+
+
+void SinirAgi::ogrenmeBaslat(){
+  while(hata > hataOrani){
+    for(int i = 0; i < SINIFSAYISI ; i++){
+        for(int j = 0; j < this->Sinif[i].getOrnekSayisi();j++){
+            ileriYonluHesaplama(i,j);
+        }
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
 void SinirAgi::ileriYonluHesaplama(int sinifIndex,int ornekIndex){
 
     Noktalar ornek;
@@ -17,7 +43,7 @@ void SinirAgi::ileriYonluHesaplama(int sinifIndex,int ornekIndex){
     // Giris ve Ara katman arası çıktı
     // İ indexine sahip sınıftan j indexine sahip örneği al
     ornek = Sinif[sinifIndex].sinifaAitNoktaGet(ornekIndex);
-    cout<<"Verilen Ornek: ";
+    cout<<"Verilen Ornek: "<<endl;
     ornek.noktalarEkranaBas();
     for (int araKatmanIndex = 0; araKatmanIndex < ARAKATMANSAYISI ; araKatmanIndex++){
        for(int girisIndex = 0; girisIndex< GIRISSAYISI ; girisIndex++){
@@ -34,14 +60,49 @@ void SinirAgi::ileriYonluHesaplama(int sinifIndex,int ornekIndex){
     toplam = 0;
      for(int noronlarArasiGecisIndex = 0; noronlarArasiGecisIndex < CIKISSAYISI; noronlarArasiGecisIndex++){
             for(int araKatmanGirisler = 0; araKatmanGirisler < ARAKATMANSAYISI+1;araKatmanGirisler++){
-            toplam = toplam + this->cikisKatmani[noronlarArasiGecisIndex].getGirisAgirligi(araKatmanGirisler) * araKatmanCikislar[araKatmanGirisler];
+                toplam = toplam + this->cikisKatmani[noronlarArasiGecisIndex].getGirisAgirligi(araKatmanGirisler) * araKatmanCikislar[araKatmanGirisler];
             }
             cikisKatmani[noronlarArasiGecisIndex].noronCikislariSetle(toplam);
             toplam = 0;
+            agirliklariGuncelle(sinifIndex,ornekIndex,cikisKatmani[noronlarArasiGecisIndex].getNetCikis());
      }
-    agirliklariGuncelle(sinifIndex,ornekIndex,cikisKatmani[0].getNetCikis());
-      // burdan sonra çıkış belli artk beklenen değere göre ağırlık güncellemesi
+
 }
+
+
+
+
+
+void SinirAgi::agirliklariGuncelle(int sinifIndex,int ornekIndex,double cikan){
+    double deltaW[GIRISSAYISI];
+    double deltaV[3];
+    Noktalar ornek = Sinif[sinifIndex].sinifaAitNoktaGet(ornekIndex);
+    cout<<"Beklenen Cİkan Farki: "<<(this->Sinif[sinifIndex].beklenenDegerGet() - cikan)<<endl;
+    // bu Kısımda ara katman ve cikis katmani arasında ki noronlar güncelleniyor.
+    for(int i = 0; i < CIKISNORONSAYISI;i++){
+        for (int j = 0; j< GIRISSAYISI;j++){
+            deltaW[j] = (mu * (this->Sinif[sinifIndex].beklenenDegerGet() - cikan)) * ((FTUREVI) * this->araKatmanCikislar[j]);
+            cikisKatmani[i].setGirisAgirliklari(deltaW[j] +  cikisKatmani[i].getGirisAgirligi(j),j);
+        }
+    }
+
+    for(int a = 0; a < CIKISNORONSAYISI;a++){
+        for(int i = 0; i < ARAKATMANSAYISI;i++){
+            for(int j = 0; j < GIRISSAYISI; j++){
+                    deltaV[j] = (mu *araKatman[i].getNetCikis() * ornek.getDegerler(j) * (this->Sinif[sinifIndex].beklenenDegerGet() - cikan)*cikisKatmani[a].getNetCikis() * cikisKatmani[a].getGirisAgirligi(j));
+                    cout<<"Onceki agirlik  : "<<araKatman[i].getGirisAgirligi(j);
+                    cout<<"Deltalar: "<<deltaV[j]<<endl;
+                    araKatman[i].setGirisAgirliklari(araKatman[i].getGirisAgirligi(j) + deltaV[j],j);
+            }
+        }
+    }
+}
+
+
+
+
+
+
 
 void SinirAgi::noronCikislariniEkranaBas(){
     for(int i = 0 ; i < ARAKATMANSAYISI;i++){
@@ -53,6 +114,8 @@ double SinirAgi::getAraKatmanCikislar(int x){
     return this->araKatmanCikislar[x];
 }
 
-void SinirAgi::agirliklariGuncelle(int sinifIndex,int ornekIndex,double cikan){
 
+double SinirAgi::getMu() {
+    return this->mu;
 }
+

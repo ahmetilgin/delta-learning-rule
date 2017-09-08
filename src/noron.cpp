@@ -6,7 +6,7 @@ using namespace std;
 
 Noron::Noron()
 {
-
+    srand(time(NULL));
     // Her Nöron için başlangıç setlenmesi rastgele
     for(int i = 0; i < 3; i++){
         girisAgirligi[i] = rand()% 5;
@@ -46,4 +46,9 @@ double Noron::sigmoidFonksiyonu(double x){
 }
 double Noron::fnetFonksiyonu(double x){
     return (0.5) * x;
+}
+
+
+void Noron::setGirisAgirliklari(double x,int index){
+    this->girisAgirligi[index] = x;
 }
